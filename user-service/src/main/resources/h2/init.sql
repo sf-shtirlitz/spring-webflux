@@ -1,12 +1,11 @@
 create table users (
-    id bigint auto_increment,
+    id integer GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
     name varchar(50),
-    balance int,
-    primary key (id)
+    balance int
 );
 
 create table user_transaction(
-    id bigint auto_increment,
+    id integer GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
     user_id bigint,
     amount int,
     transaction_date timestamp,
@@ -19,4 +18,5 @@ insert into users
     ('sam', 1000),
     ('mike', 1200),
     ('jake', 800),
-    ('marshal', 2000);
+    ('marshal', 2000),
+    ('shtirlitz', 1000);

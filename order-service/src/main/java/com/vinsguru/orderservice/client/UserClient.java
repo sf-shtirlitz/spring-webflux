@@ -15,7 +15,7 @@ public class UserClient {
 
     private final WebClient webClient;
 
-    public UserClient(@Value("${user.service.url}") String url){
+    public UserClient(@Value("${user.service.url}") String url){ //user.service.url=http://localhost:8092/user/
         this.webClient = WebClient.builder()
                 .baseUrl(url)
                 .build();

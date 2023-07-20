@@ -15,6 +15,7 @@ public class InputValidationHandler {
         response.setErrorCode(ex.getErrorCode());
         response.setInput(ex.getInput());
         response.setMessage(ex.getMessage());
+        System.out.println(response.toString());
         return ResponseEntity.badRequest().body(response);
     }
 

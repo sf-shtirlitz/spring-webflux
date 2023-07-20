@@ -35,7 +35,7 @@ class OrderServiceApplicationTests {
 				.doOnNext(System.out::println);
 
 		StepVerifier.create(dtoFlux)
-				.expectNextCount(4)
+				.expectNextCount(5)
 				.verifyComplete();
 
 

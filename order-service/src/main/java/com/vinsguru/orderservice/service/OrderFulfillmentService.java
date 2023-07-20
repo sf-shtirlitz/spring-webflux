@@ -9,9 +9,11 @@ import com.vinsguru.orderservice.repository.PurchaseOrderRepository;
 import com.vinsguru.orderservice.util.EntityDtoUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.web.reactive.function.client.WebClientResponseException;
 import reactor.core.publisher.Mono;
 import reactor.core.scheduler.Schedulers;
 import reactor.util.retry.Retry;
+import com.vinsguru.orderservice.exceptions.ServiceUnavailbleException;
 
 import java.time.Duration;
 
@@ -35,12 +37,22 @@ public class OrderFulfillmentService {
                 .map(EntityDtoUtil::getPurchaseOrder)
                 .map(this.orderRepository::save) // blocking
                 .map(EntityDtoUtil::getPurchaseOrderResponseDto)
-                .subscribeOn(Schedulers.boundedElastic());
+                .subscribeOn(Schedulers.boundedElastic());//this use a dedicated thread so the blocking call
+        // above would not suspend the execution
     }
 
     private Mono<RequestContext> productRequestResponse(RequestContext rc){
         return this.productClient.getProductById(rc.getPurchaseOrderRequestDto().getProductId())
                 .doOnNext(rc::setProductDto)
+                .doOnError(throwable -> this.processException(throwable))
+//                .onErrorResume(throwable -> {
+//                    // Here, you can extract and handle the error message from the server response
+//                    String errorMessage = "Unknown error occurred from server";
+//                    if (throwable instanceof ServiceUnavailbleException) {
+//                        errorMessage = ((ServiceUnavailbleException)throwable).getMessage();
+//                    }
+//                    System.err.println("Error occurred: " + errorMessage);
+//                })
                 .retryWhen(Retry.fixedDelay(5, Duration.ofSeconds(1)))
                 .thenReturn(rc);
     }
@@ -48,7 +60,18 @@ public class OrderFulfillmentService {
     private Mono<RequestContext> userRequestResponse(RequestContext rc){
         return this.userClient.authorizeTransaction(rc.getTransactionRequestDto())
                 .doOnNext(rc::setTransactionResponseDto)
+                .doOnError(throwable -> System.err.println("Error occurred: " + throwable.getMessage()))
                 .thenReturn(rc);
+    }
+
+    private void processException(Throwable e) {
+        if (e instanceof WebClientResponseException) {
+            WebClientResponseException responseException = (WebClientResponseException) e;
+            String errorMessage = responseException.getResponseBodyAsString();
+            System.err.println("Error occurred: " + e.getMessage() + " - " +errorMessage);
+        } else {
+            System.err.println("Unknown error occurred: " + e.getMessage());
+        }
     }
 
 }

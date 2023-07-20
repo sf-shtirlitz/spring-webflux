@@ -1,6 +1,7 @@
 package com.vinsguru.productservice.controller;
 
 import com.vinsguru.productservice.dto.ProductDto;
+import com.vinsguru.productservice.exceptions.ServiceUnavailbleException;
 import com.vinsguru.productservice.service.ProductService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Range;
@@ -31,7 +32,8 @@ public class ProductController {
 
     @GetMapping("{id}")
     public Mono<ResponseEntity<ProductDto>> getProductById(@PathVariable String id){
-        this.simulateRandomException();
+        //this.simulateRandomException();//this one is done intentionally to simulate the problem with the service,
+        // so we would process this exception on the client side and make it more resilient with retries
         return this.service.getProductById(id)
                             .map(ResponseEntity::ok)
                             .defaultIfEmpty(ResponseEntity.notFound().build());
@@ -57,7 +59,7 @@ public class ProductController {
     private void simulateRandomException(){
         int nextInt = ThreadLocalRandom.current().nextInt(1, 10);
         if(nextInt > 5)
-            throw new RuntimeException("something is wrong");
+            throw new ServiceUnavailbleException(101);
     }
 
 }
