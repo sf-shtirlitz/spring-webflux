@@ -15,7 +15,8 @@ public class SinkConfig {
     }
 
     @Bean
-    public Flux<ProductDto> productBroadcast(Sinks.Many<ProductDto> sink){
+    public Flux<ProductDto> getBroadcastedProducts(Sinks.Many<ProductDto> sink){//looks like it doesn't matter what the
+        //name of this Bean is going to be, since it's used via Flux<ProductDto> instantiation in ProductStreamController
         return sink.asFlux();
     }
 

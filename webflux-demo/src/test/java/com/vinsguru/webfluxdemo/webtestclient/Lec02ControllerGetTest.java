@@ -30,7 +30,7 @@ public class Lec02ControllerGetTest {
     @Test
     public void singleResponseTest(){
 
-        Mockito.when(reactiveMathService.findSquare(Mockito.anyInt())).thenReturn(Mono.empty());
+        Mockito.when(reactiveMathService.findSquare(Mockito.anyInt())).thenReturn(Mono.just(new Response(25)));
 
         this.client
                 .get()
@@ -39,7 +39,7 @@ public class Lec02ControllerGetTest {
                 .expectStatus().is2xxSuccessful()
                 .expectHeader().contentType(MediaType.APPLICATION_JSON)
                 .expectBody(Response.class)
-                .value(r -> Assertions.assertThat(r.getOutput()).isEqualTo(-1));
+                .value(r -> Assertions.assertThat(r.getOutput()).isEqualTo(25));
 
     }
 

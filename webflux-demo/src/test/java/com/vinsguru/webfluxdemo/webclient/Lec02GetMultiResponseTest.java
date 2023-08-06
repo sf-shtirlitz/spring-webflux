@@ -20,12 +20,16 @@ public class Lec02GetMultiResponseTest extends BaseTest {
                 .uri("reactive-math/table/{number}", 5)
                 .retrieve()
                 .bodyToFlux(Response.class)
-                .doOnNext(System.out::println);
+                .doOnNext(item -> print(item.toString()));
 
         StepVerifier.create(responseFlux)
                 .expectNextCount(10)
                 .verifyComplete();
 
+    }
+
+    void print(String item) {
+        System.out.println(item);
     }
 
     @Test

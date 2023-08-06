@@ -39,7 +39,7 @@ public class ProductService {
                 .map(EntityDtoUtil::toEntity)
                 .flatMap(this.repository::insert)
                 .map(EntityDtoUtil::toDto)
-                .doOnNext(this.sink::tryEmitNext);
+                .doOnNext(this.sink::tryEmitNext);//creates/inserts a new product in the MongoDB every second
     }
 
     public Mono<ProductDto> updateProduct(String id, Mono<ProductDto> productDtoMono){

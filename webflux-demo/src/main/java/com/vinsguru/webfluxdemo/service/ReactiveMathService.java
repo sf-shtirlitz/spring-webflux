@@ -13,7 +13,7 @@ public class ReactiveMathService {
 
     public Mono<Response> findSquare(int input){
         return Mono.fromSupplier(() -> input * input)
-                    .map(Response::new);
+                    .map(Response::new);//item -> new Response(item)
     }
 
     public Flux<Response> multiplicationTable(int input){

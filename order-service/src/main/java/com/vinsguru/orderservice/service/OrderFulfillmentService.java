@@ -37,7 +37,7 @@ public class OrderFulfillmentService {
                 .map(EntityDtoUtil::getPurchaseOrder)
                 .map(this.orderRepository::save) // blocking
                 .map(EntityDtoUtil::getPurchaseOrderResponseDto)
-                .subscribeOn(Schedulers.boundedElastic());//this use a dedicated thread so the blocking call
+                .subscribeOn(Schedulers.boundedElastic());//this uses a dedicated thread so the blocking call
         // above would not suspend the execution
     }
 
